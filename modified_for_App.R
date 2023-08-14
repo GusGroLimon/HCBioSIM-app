@@ -320,12 +320,3 @@ for (i in 1:length(newSW$ChemID)){
 M16<-data.frame(LogDT50_Seawater = signif(predict(m3d2, newSW), 7))
 
 write.csv(All_DT50<-data.frame(PGR, KGB, CIA, M16), file = "Results_DT50.csv")
-
-#Stand alone app (desktop app)
-# https://towardsdev.com/converting-a-shiny-app-into-a-standalone-desktop-app-for-windows-ca3656da8468
-# https://www.r-bloggers.com/2020/10/turn-a-shiny-application-into-a-tablet-or-desktop-app/
-# https://foretodata.com/how-to-make-a-standalone-desktop-application-with-shiny-and-electron-on-windows/
-# https://www.r-bloggers.com/2023/03/creating-standalone-apps-from-shiny-with-electron-2023-macos-m1/
-
-#Paid server option (online)
-# https://www.shinyapps.io/ 

@@ -1,0 +1,60 @@
+library(shiny)
+library(DT)
+source("your_pre_existing_script.R")  # Replace with the name of your pre-existing script
+
+ui <- fluidPage(
+  titlePanel("Custom CSV Processor"),
+  sidebarLayout(
+    sidebarPanel(
+      fileInput("file", "Choose CSV File", accept = ".csv"),
+      br(),
+      sliderInput("num_input", "Select a Number", min = 0, max = 10, value = 5),
+      br(),
+      actionButton("run_script", "Run Script")
+    ),
+    mainPanel(
+      DTOutput("table"),
+      downloadButton("download_csv", "Download Processed CSV")
+    )
+  )
+)
+
+server <- function(input, output) {
+  data <- reactive({
+    req(input$file)
+    read.csv(input$file$datapath)
+  })
+  
+  output$table <- renderDT({
+    datatable(data(), options = list(pageLength = 5))
+  })
+  
+  observe({
+    if (input$num_input >= 0 && input$num_input <= 4) {
+      showModal(
+        modalDialog(
+          title = "Warning",
+          "Values between 0 and 4 are discouraged.",
+          easyClose = TRUE
+        )
+      )
+    }
+  })
+  
+  processed_data <- eventReactive(input$run_script, {
+    # Call the function from your pre-existing script with the input value
+    processed_data <- your_pre_existing_function(data(), input$num_input)
+    processed_data
+  })
+  
+  output$download_csv <- downloadHandler(
+    filename = function() {
+      "processed_data.csv"
+    },
+    content = function(file) {
+      write.csv(processed_data(), file, row.names = FALSE)
+    }
+  )
+}
+
+shinyApp(ui, server)

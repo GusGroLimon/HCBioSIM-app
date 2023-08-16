@@ -1,33 +1,56 @@
+library(shiny)
+library(DT)
+
 ui <- fluidPage(
   titlePanel("Custom Dashboard"),
   fluidRow(
-    column(6,
-           h3("Dropdowns"),
-           selectInput("temperature", "Temperature", choices = seq(2, 10, by = 2), selected = 6),
-           selectInput("carbon_content", "Carbon Content", choices = seq(2, 10, by = 2), selected = 6),
-           selectInput("logFoc", "logFoc", choices = seq(2, 10, by = 2), selected = 6),
-           selectInput("logDose", "logDose", choices = seq(2, 10, by = 2), selected = 6),
-           selectInput("log_T_Dose", "Log_T_Dose", choices = seq(2, 10, by = 2), selected = 6)
+    column(3,
+      h3("Dropdowns"),
+      selectInput("temperature", "Temperature", choices = seq(2, 10, by = 2), selected = 6),
+      selectInput("carbon_content", "Carbon Content", choices = seq(2, 10, by = 2), selected = 6)
     ),
-    column(6,
-           h3("Sliders"),
-           sliderInput("temperature_slider", "Temperature Slider", min = 0, max = 12, value = 6),
-           sliderInput("carbon_content_slider", "Carbon Content Slider", min = 0, max = 12, value = 6),
-           sliderInput("logFoc_slider", "logFoc Slider", min = 0, max = 12, value = 6),
-           sliderInput("logDose_slider", "logDose Slider", min = 0, max = 12, value = 6),
-           sliderInput("log_T_Dose_slider", "Log_T_Dose Slider", min = 0, max = 12, value = 6)
+    column(3,
+      h3("Dropdowns"),
+      selectInput("logFoc", "logFoc", choices = seq(2, 10, by = 2), selected = 6),
+      selectInput("logDose", "logDose", choices = seq(2, 10, by = 2), selected = 6)
+    ),
+    column(3,
+      h3("Dropdowns"),
+      selectInput("log_T_Dose", "Log_T_Dose", choices = seq(2, 10, by = 2), selected = 6)
+    ),
+    column(3,
+      h3("Sliders"),
+      sliderInput("temperature_slider", "Temperature Slider", min = 0, max = 12, value = 6),
+      sliderInput("carbon_content_slider", "Carbon Content Slider", min = 0, max = 12, value = 6)
     )
   ),
-  hr(),
-  actionButton("run_script", "Run Script"),
-  hr(),
-  DTOutput("table"),
-  downloadButton("download_csv", "Download Processed CSV")
+  fluidRow(
+    column(3,
+      h3("Sliders"),
+      sliderInput("logFoc_slider", "logFoc Slider", min = 0, max = 12, value = 6),
+      sliderInput("logDose_slider", "logDose Slider", min = 0, max = 12, value = 6)
+    ),
+    column(3,
+      h3("Sliders"),
+      sliderInput("log_T_Dose_slider", "Log_T_Dose Slider", min = 0, max = 12, value = 6)
+    ),
+    column(6,
+      hr(),
+      actionButton("run_script", "Run Script"),
+      hr(),
+      DTOutput("table"),
+      downloadButton("download_csv", "Download Processed CSV")
+    )
+  )
 )
 
 server <- function(input, output) {
   observe({
-    inputs <- c("temperature", "carbon_content", "logFoc", "logDose", "log_T_Dose")
+    inputs <- c(
+      "temperature", "carbon_content", "logFoc", "logDose", "log_T_Dose",
+      "temperature_slider", "carbon_content_slider", "logFoc_slider", 
+      "logDose_slider", "log_T_Dose_slider"
+    )
     for (var in inputs) {
       if (input[[var]] <= 4) {
         showModal(
@@ -45,7 +68,9 @@ server <- function(input, output) {
   processed_data <- eventReactive(input$run_script, {
     input_vars <- c(
       input$temperature, input$carbon_content, input$logFoc,
-      input$logDose, input$log_T_Dose
+      input$logDose, input$log_T_Dose,
+      input$temperature_slider, input$carbon_content_slider,
+      input$logFoc_slider, input$logDose_slider, input$log_T_Dose_slider
     )
     # Call the function from your modified pre-existing script with user inputs
     processed_data <- process_data(input_vars)
